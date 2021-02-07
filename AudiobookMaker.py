@@ -33,6 +33,7 @@ class AudiobookMaker:
         self.engine = mp3.init()
         file = open(self.pathToFile, 'rb')
         self.pdfReader = pdf.PdfFileReader(file)
+        self.engine.setProperty('rate', 125) # I think it is 1.0
         self.get_pdf_info()
         self.run = True
 
@@ -104,17 +105,33 @@ class AudiobookMaker:
         self.save_to_MP3(text)
 
     def change_voice(self):
-        pass
+        self.clear_console()
+        self.show_available_voices()
+        choice = int(input("Choose voice: ")) - 1
+        voices = self.engine.getProperty('voices')
+        self.engine.setProperty('voice', voices[choice].id)
 
     def change_volume(self):
-        pass
+        self.clear_console()
+        print("Current volume: ", self.engine.getProperty('volume'))
+        new_volume = float(input('Choose volume between 0 - 1'))
+        if new_volume > 1 or new_volume < 0:
+            print("In order to change volume you have to pick a number between 0 and 1")
+            return
+        self.engine.setProperty('volume', new_volume)
+
+
 
     def change_rate(self):
-        pass
+        self.clear_console()
+        print("Current rate: ", self.engine.getProperty('rate'))
+        new_rate = int(input('Choose a new voice rate'))
+        self.engine.setProperty('rate', new_rate)
 
+    # It is probably all what I need to make na audiobook
     def get_pdf_info(self):
         self.pages = self.pdfReader.numPages
-        #print(self.pages)
+
 
 ##################################### END OF MENU OPTIONS #####################################
 
@@ -150,6 +167,11 @@ class AudiobookMaker:
         page = self.pdfReader.getPage(page)
         text = page.extractText()
         return text
+
+    def show_available_voices(self):
+        voices = self.engine.getProperty('voices')
+        for index, name in enumerate(voices):
+            print(f"{index}. {name}")
 
 
 
