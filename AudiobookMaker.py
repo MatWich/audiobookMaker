@@ -2,6 +2,7 @@ import pyttsx3 as mp3
 import os
 import time
 import PyPDF2 as pdf
+import random
 
 class AudiobookMaker:
     def __init__(self, pathToPDFFile = None):
@@ -83,22 +84,24 @@ class AudiobookMaker:
 
 ##################################### MENU OPTIONS #####################################
     def read_file(self):
-        self.get_pdf_info()
         text = self.get_all_text_to_string()
         self.read_text(text)
 
     def read_page(self):
-        self.get_pdf_info()
-        page = int(input(f"Select page number from 0 - {self.pages - 1}: "))
-        text = self.get_text_from_single_page(page)
+        page_num = int(input(f"Select page number from 0 - {self.pages - 1}: "))
+        text = self.get_text_from_single_page(page_num)
         self.read_text(text)
 
 
     def create_MP3_from_all(self):
-        pass
+        text = self.get_all_text_to_string()
+        self.save_to_MP3(text)
+
 
     def create_MP3_from_page(self):
-        pass
+        page_num = int(input(f"Select page number from 0 - {self.pages - 1}: "))
+        text = self.get_text_from_single_page(page_num)
+        self.save_to_MP3(text)
 
     def change_voice(self):
         pass
@@ -120,6 +123,16 @@ class AudiobookMaker:
         self.engine.runAndWait()
         self.engine.stop()
 
+    def save_to_MP3(self, text='Error accured. But how is that possible?'):
+        filename = "created" + str(self.generate_random_number()) + ".mp3"
+        self.engine.save_to_file(text, filename)
+        self.engine.runAndWait()
+        self.engine.stop()
+        self.clear_console()
+        print('Succesfully created file: ' + filename)
+        time.sleep(3.0)
+
+
     # helper func for read_file()
     def get_all_text_to_string(self):
         text = ""
@@ -138,6 +151,8 @@ class AudiobookMaker:
         text = page.extractText()
         return text
 
+
+
     def get_name_of_the_file(self):
         self.fileName = ""
         i = 0
@@ -149,6 +164,10 @@ class AudiobookMaker:
 
     def print_name_of_the_file(self):
         print('Current File \"' + self.fileName + "\"")
+
+    def generate_random_number(self):
+        num = random.randint(20, 6958340)
+        return num
 
     def clear_console(self):
         os.system('cls' if os.name == 'nt' else 'clear')
