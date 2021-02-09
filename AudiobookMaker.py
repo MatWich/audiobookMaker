@@ -3,6 +3,7 @@ import os
 import time
 import PyPDF2 as pdf
 import random
+from decorator import MessageDecorator
 
 class AudiobookMaker:
     def __init__(self, pathToPDFFile = None):
@@ -15,6 +16,8 @@ class AudiobookMaker:
         # PDF
         self.pdfReader = None
 
+        # colored console
+        self.msg = None
 
         # List of possible options to choose from main menu
         self.possibleChoices = [0, 1, 2, 3, 4, 5, 6, 7]
@@ -26,7 +29,8 @@ class AudiobookMaker:
     """Core of the program"""
     def set_up(self):
         if self.pathToFile is None or self.pathToFile[-4:] != '.pdf':
-            print('Unable to reach pdf file')
+            self.msg.err('Unable to reach pdf file')
+            #print('Unable to reach pdf file')
             exit(0)
         self.get_name_of_the_file()
 
@@ -36,6 +40,8 @@ class AudiobookMaker:
         self.engine.setProperty('rate', 125) # I think it is 1.0
         self.get_pdf_info()
         self.run = True
+        self.msg = MessageDecorator()
+
 
     def mainloop(self):
         while self.run:
@@ -47,7 +53,8 @@ class AudiobookMaker:
 
     def draw_menu(self):
         #self.print_name_of_the_file()
-        print(f"What would you like to do with {self.fileName} ?")
+        self.msg.dist(f"What would you like to do with {self.fileName} ?")
+        #print(f"What would you like to do with {self.fileName} ?")
         print("1. Read whole file.")
         print("2. Read selected page")
         print("3. Create a mp3 file from the given one")
@@ -60,7 +67,8 @@ class AudiobookMaker:
     def option_handler(self, selectedOption):
         if selectedOption not in self.possibleChoices:
             self.clear_console()
-            print(f"There is no option behind {selectedOption}")
+            self.msg.err(f"There is no option behind {selectedOption}")
+            #print(f"There is no option behind {selectedOption}")
             time.sleep(4.0)
 
         if selectedOption == 0:
@@ -113,7 +121,8 @@ class AudiobookMaker:
 
     def change_volume(self):
         self.clear_console()
-        print("Current volume: ", self.engine.getProperty('volume'))
+        self.msg.dist(f"Current volume {self.engine.getProperty('volume')}")
+        #print("Current volume: ", self.engine.getProperty('volume'))
         new_volume = float(input('Choose volume between 0 - 1'))
         if new_volume > 1 or new_volume < 0:
             print("In order to change volume you have to pick a number between 0 and 1")
@@ -124,7 +133,8 @@ class AudiobookMaker:
 
     def change_rate(self):
         self.clear_console()
-        print("Current rate: ", self.engine.getProperty('rate'))
+        self.msg.dist(f"Current rate: {self.engine.getProperty('rate')}")
+        #print("Current rate: ", self.engine.getProperty('rate'))
         new_rate = int(input('Choose a new voice rate'))
         self.engine.setProperty('rate', new_rate)
 
@@ -146,7 +156,8 @@ class AudiobookMaker:
         self.engine.runAndWait()
         self.engine.stop()
         self.clear_console()
-        print('Succesfully created file: ' + filename)
+        self.msg.created('Succesfully created file: ' + filename)
+        #print('Succesfully created file: ' + filename)
         time.sleep(3.0)
 
 
@@ -161,7 +172,8 @@ class AudiobookMaker:
     # helper func for read_page()
     def get_text_from_single_page(self, page):
         if not isinstance(page, int) or page >= self.pages:
-            print("This PDF file doesn't have a page with this number")
+            self.msg.err("This PDF file doesn't have a page with this number")
+            #int("This PDF file doesn't have a page with this number")
             return
 
         page = self.pdfReader.getPage(page)
@@ -185,7 +197,8 @@ class AudiobookMaker:
             i += 1
 
     def print_name_of_the_file(self):
-        print('Current File \"' + self.fileName + "\"")
+        self.msg.dist(f"Current file: \" {self.fileName}\"")
+        #print('Current File \"' + self.fileName + "\"")
 
     def generate_random_number(self):
         num = random.randint(20, 6958340)
@@ -195,7 +208,8 @@ class AudiobookMaker:
         os.system('cls' if os.name == 'nt' else 'clear')
 
     def exit(self):
-        print('Until the next time')
+        self.msg.goodbye('Until the next time')
+        #print('Until the next time')
 
         self.run = False
         exit(0)

@@ -5,7 +5,7 @@
 
 # C extensions
 *.so
-ANC.pdf
+pdfs/ANC.pdf
 # Distribution / packaging
 .Python
 build/
