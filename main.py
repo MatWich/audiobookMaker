@@ -2,6 +2,7 @@ from AudiobookMaker import AudiobookMaker
 import os
 from os import path
 
+
 def main():
     pa = path.dirname(__file__)
     PATH = path.join(pa, "pdfs")
@@ -14,6 +15,7 @@ def main():
     readme = path.join(PATH, file_name)
     am = AudiobookMaker(readme)
     am.mainloop()
+
 
 if __name__ == '__main__':
     main()
